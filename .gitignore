@@ -1,0 +1,9 @@
+# SQLiteデータベース（個人データを含むため除外）
+db/database.sqlite
+
+# PHPのキャッシュ
+*.cache
+
+# OS生成ファイル
+.DS_Store
+Thumbs.db
