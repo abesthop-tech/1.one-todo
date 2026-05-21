@@ -6,16 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>今日のタスク</title>
     <link rel="stylesheet" href="css/style.css">
-    <script>
-        if (localStorage.getItem('darkMode') === 'on') document.documentElement.classList.add('dark');
-    </script>
+
 </head>
 
 <body>
     <div class="container">
         <header>
-            <h1>今日やること</h1>
-            <a href="stock.php">ストックリスト →</a>
             <p id="today-date"></p>
         </header>
 
@@ -33,12 +29,15 @@
                 <p id="task-reason"></p>
                 <div class="actions">
                     <button id="btn-complete">タスクを完了する！</button>
+                    <a href="stock.php" class="btn-add-task">タスクを追加・確認</a>
                 </div>
             </div>
 
             <div id="empty" class="state hidden">
                 <p>全タスク完了！えらいぞ！</p>
-                <a href="stock.php">追加するならクリック →</a>
+                <div class="actions">
+                    <a href="stock.php" class="btn-add-task">タスクを追加・確認</a>
+                </div>
             </div>
 
             <div id="completed" class="state hidden">
@@ -47,26 +46,13 @@
                 <p class="complete-sub">今日の1タスク、完了です。</p>
                 <div class="actions">
                     <button id="btn-next-task">次のタスクへ</button>
+                    <a href="stock.php" class="btn-add-task">タスクを追加・確認</a>
                 </div>
             </div>
         </main>
     </div>
 
     <footer>© 2026 HCP4</footer>
-
-    <div id="settings-container">
-        <button id="gear-btn" aria-label="設定">⚙</button>
-        <div id="settings-panel" class="hidden">
-            <label class="toggle-label">
-                <span>ダークモード</span>
-                <span class="toggle">
-                    <input type="checkbox" id="dark-toggle">
-                    <span class="toggle-slider"></span>
-                </span>
-            </label>
-        </div>
-    </div>
-    <script src="js/settings.js"></script>
 
     <script>
         let currentTask = null;
@@ -114,38 +100,52 @@
             section.classList.remove('hidden');
             tasks.forEach(task => {
                 const li = document.createElement('li');
-                const input = document.createElement('input');
-                input.type = 'checkbox';
-                input.id = `fixed-${task.id}`;
-                input.dataset.id = task.id;
-                input.dataset.content = task.content;
-                input.addEventListener('change', checkClick);
-                const label = document.createElement('label');
-                label.htmlFor = `fixed-${task.id}`;
-                label.textContent = task.content;
-                li.appendChild(input);
-                li.appendChild(label);
+                li.dataset.id = task.id;
+                li.dataset.content = task.content;
+                const icon = document.createElement('span');
+                icon.className = 'check-icon';
+                icon.textContent = '○';
+                const span = document.createElement('span');
+                span.textContent = task.content;
+                li.appendChild(icon);
+                li.appendChild(span);
+                li.addEventListener('click', checkClick);
                 list.appendChild(li);
             });
         }
 
         async function checkClick(e) {
-            const checkbox = e.target;
-            checkbox.disabled = true;
-            await fetch('api/completions.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    task_id: parseInt(checkbox.dataset.id),
-                    content: checkbox.dataset.content,
-                    reason: '',
-                    is_fixed: 1,
-                }),
-            });
-            const checkboxes = document.querySelectorAll('#tasks-list input[type=checkbox]');
-            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-            if (allChecked) {
-                document.getElementById('fixed-complete-msg').classList.remove('hidden');
+            const li = e.currentTarget;
+            const icon = li.querySelector('.check-icon');
+            const isCompleted = li.classList.contains('completed');
+
+            if (isCompleted) {
+                li.classList.remove('completed');
+                icon.textContent = '○';
+                document.getElementById('fixed-complete-msg').classList.add('hidden');
+                await fetch(`api/tasks.php?id=${li.dataset.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ is_completed: 0 }),
+                });
+            } else {
+                li.classList.add('completed');
+                icon.textContent = '✅';
+                await fetch('api/completions.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        task_id: parseInt(li.dataset.id),
+                        content: li.dataset.content,
+                        reason: '',
+                        is_fixed: 1,
+                    }),
+                });
+                const items = document.querySelectorAll('#tasks-list li');
+                const allDone = Array.from(items).every(item => item.classList.contains('completed'));
+                if (allDone) {
+                    document.getElementById('fixed-complete-msg').classList.remove('hidden');
+                }
             }
         }
 

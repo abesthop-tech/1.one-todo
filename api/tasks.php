@@ -19,7 +19,12 @@ if ($method === 'GET') {
             $where[] = 'scheduled_date = ?';
             $params[] = $_GET['date'];
         }
-    }else{
+    } elseif($type === 'all'){
+        if(!empty($_GET['date'])){
+            $where[] = 'scheduled_date = ?';
+            $params[] = $_GET['date'];
+        }
+    } else {
         $where[] = 'is_fixed = 0';
     }
 
@@ -69,6 +74,18 @@ if ($method === 'GET') {
     }
     $stmt = $db->prepare('DELETE FROM tasks WHERE id = ?');
     $stmt->execute([$id]);
+    echo json_encode(['ok' => true]);
+
+} elseif ($method === 'PATCH') {
+    $id = (int)($_GET['id'] ?? 0);
+    if ($id === 0) {
+        http_response_code(400);
+        echo json_encode(['error' => 'idは必須です']);
+        exit;
+    }
+    $body = json_decode(file_get_contents('php://input'), true);
+    $is_completed = (int)($body['is_completed'] ?? 0);
+    $db->prepare('UPDATE tasks SET is_completed = ? WHERE id = ?')->execute([$is_completed, $id]);
     echo json_encode(['ok' => true]);
 
 } else {

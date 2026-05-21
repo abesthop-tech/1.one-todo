@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $db = get_db();
-$tasks = $db->query('SELECT * FROM tasks WHERE is_completed = 0 ORDER BY id')->fetchAll();
+$tasks = $db->query('SELECT * FROM tasks WHERE is_completed = 0 AND is_fixed = 0 ORDER BY id')->fetchAll();
 
 if (count($tasks) === 0) {
     echo json_encode(['error' => 'タスクがありません']);

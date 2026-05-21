@@ -45,14 +45,11 @@ http://localhost/Claude/1.%20one%20todo/
 
 | 操作 | 方法 |
 |------|------|
-| タスク追加 | 入力欄に入力して「追加」ボタン（またはEnterキー） |
+| タスク追加（通常） | 入力欄に入力して「追加」ボタン |
+| タスク追加（必須） | 必須トグルをONにして日付を選択後「追加」 |
 | タスク削除 | 各行の「削除」ボタン |
 | 完了済みを見る | 「完了済み」をクリックしてトグル表示 |
-
-### 設定（⚙ ボタン）
-
-右上の歯車アイコンをクリックするとダークモードの切り替えができます。
-設定はブラウザに保存されるので、次回アクセス時も引き継がれます。
+| 完了済みを絞り込む | 種別（通常/必須）・日付でフィルター |
 
 ---
 
@@ -62,19 +59,15 @@ http://localhost/Claude/1.%20one%20todo/
 1. one todo/
 ├── index.php           # メイン画面（タスク提案）
 ├── stock.php           # ストックリスト管理画面
-├── config.php          # DB接続パスの定義
 ├── api/
-│   ├── tasks.php       # タスクの追加・取得・削除 API
+│   ├── tasks.php       # タスクの追加・取得・削除・完了取消 API
 │   ├── suggest.php     # タスク提案 API（ランダム選択＋名言）
 │   └── completions.php # タスク完了記録 API
 ├── db/
 │   ├── database.php    # DB接続・テーブル初期化
 │   └── database.sqlite # SQLiteデータベース（自動生成）
-├── css/
-│   └── style.css       # 全画面共通スタイル
-├── js/
-│   └── settings.js     # ダークモード設定の共通スクリプト
-└── setup.sql           # テーブル定義（参照用）
+└── css/
+    └── style.css       # 全画面共通スタイル（ダークモード専用）
 ```
 
 ---
@@ -88,6 +81,8 @@ http://localhost/Claude/1.%20one%20todo/
 | id | INTEGER | 主キー（自動採番） |
 | content | TEXT | タスク内容 |
 | is_completed | INTEGER | 完了フラグ（0: 未完了 / 1: 完了） |
+| is_fixed | INTEGER | 必須タスクフラグ（0: 通常 / 1: 必須） |
+| scheduled_date | DATE | 実施予定日（必須タスクのみ） |
 | created_at | DATETIME | 登録日時 |
 
 **completions テーブル** — 完了履歴
@@ -98,6 +93,7 @@ http://localhost/Claude/1.%20one%20todo/
 | task_id | INTEGER | 完了したタスクのID |
 | content | TEXT | タスク内容（タスク削除後も保持） |
 | reason | TEXT | 完了時に表示されていた名言 |
+| is_fixed | INTEGER | 必須タスクフラグ（0: 通常 / 1: 必須） |
 | completed_at | DATETIME | 完了日時 |
 
 ---
