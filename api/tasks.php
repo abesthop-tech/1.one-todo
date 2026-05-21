@@ -8,11 +8,31 @@ $db = get_db();
 
 if ($method === 'GET') {
     $status = $_GET['status'] ?? 'active';
-    if ($status === 'completed') {
-        $stmt = $db->query('SELECT * FROM tasks WHERE is_completed = 1 ORDER BY created_at DESC');
-    } else {
-        $stmt = $db->query('SELECT * FROM tasks WHERE is_completed = 0 ORDER BY created_at DESC');
+    $type = $_GET['type'] ?? 'stock';
+    
+    $where = [];
+    $params = [];
+
+    if($type === 'fixed'){
+        $where[] = 'is_fixed = 1';
+        if(!empty($_GET['date'])){
+            $where[] = 'scheduled_date = ?';
+            $params[] = $_GET['date'];
+        }
+    }else{
+        $where[] = 'is_fixed = 0';
     }
+
+    if($status ==='completed'){
+        $where[] = 'is_completed =1';
+    }else{
+        $where[] = 'is_completed=0'; 
+    }
+
+    $sql = 'SELECT * FROM tasks WHERE '. implode(' AND ',$where) . ' ORDER BY created_at DESC';
+    $stmt = $db->prepare($sql);
+    $stmt->execute($params);
+
     echo json_encode($stmt->fetchAll());
 
 } elseif ($method === 'POST') {
@@ -23,8 +43,21 @@ if ($method === 'GET') {
         echo json_encode(['error' => 'contentは必須です']);
         exit;
     }
-    $stmt = $db->prepare('INSERT INTO tasks (content) VALUES (?)');
-    $stmt->execute([$content]);
+    $is_fixed = (int)($body['is_fixed'] ?? 0);
+    $scheduled_date = isset($body['scheduled_date'])
+        ? trim((string)$body['scheduled_date'])
+        : null;
+    if($scheduled_date === ''){
+        $scheduled_date = null;
+    }
+    if($is_fixed === 1 && $scheduled_date === null){
+        http_response_code(400);
+        echo json_encode(['error' => '日付は必須です']);
+        exit;
+    }
+
+    $stmt = $db->prepare('INSERT INTO tasks (content,is_fixed,scheduled_date) VALUES (?,?,?)');
+    $stmt->execute([$content,$is_fixed,$scheduled_date]);
     echo json_encode(['id' => $db->lastInsertId()]);
 
 } elseif ($method === 'DELETE') {

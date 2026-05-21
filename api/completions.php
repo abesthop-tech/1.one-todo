@@ -13,6 +13,7 @@ $body = json_decode(file_get_contents('php://input'), true);
 $task_id = (int)($body['task_id'] ?? 0);
 $content = trim($body['content'] ?? '');
 $reason  = trim($body['reason'] ?? '');
+$is_fixed = (int)($body['is_fixed'] ?? 0);
 
 if ($task_id === 0 || $content === '') {
     http_response_code(400);
@@ -21,7 +22,7 @@ if ($task_id === 0 || $content === '') {
 }
 
 $db = get_db();
-$db->prepare('INSERT INTO completions (task_id, content, reason) VALUES (?, ?, ?)')->execute([$task_id, $content, $reason]);
+$db->prepare('INSERT INTO completions (task_id, content, reason,is_fixed) VALUES (?, ?, ?,?)')->execute([$task_id, $content, $reason,$is_fixed]);
 $db->prepare('UPDATE tasks SET is_completed = 1 WHERE id = ?')->execute([$task_id]);
 
 echo json_encode(['ok' => true]);

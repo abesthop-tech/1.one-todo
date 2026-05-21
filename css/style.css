@@ -155,6 +155,69 @@ header {
     margin-bottom: 1rem;
 }
 
+/* ========== index.php 必須タスク ========== */
+
+#fixed-tasks {
+    width: 100%;
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+}
+
+#fixed-heading {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+#tasks-list {
+    list-style: none;
+}
+
+#tasks-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+#tasks-list li:last-child {
+    border-bottom: none;
+}
+
+#tasks-list input[type="checkbox"] {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
+    accent-color: var(--text);
+    cursor: pointer;
+}
+
+#tasks-list label {
+    font-size: 1rem;
+    cursor: pointer;
+    flex: 1;
+}
+
+#tasks-list input[type="checkbox"]:checked + label {
+    color: var(--text-muted);
+    text-decoration: line-through;
+}
+
+#fixed-complete-msg {
+    margin-top: 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #4caf50;
+    text-align: center;
+}
+
 /* ========== stock.php ========== */
 
 .container > h1 {
@@ -299,6 +362,161 @@ input[type="text"]:focus {
 }
 
 #completed-list li span {
+    font-size: 1rem;
+    color: var(--text-muted);
+    text-decoration: line-through;
+}
+
+/* ========== 必須タスクセクション ========== */
+
+#fixed-section {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--border-strong);
+}
+
+#fixed-section h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+}
+
+#fixed-add-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+#fixed-add-form #fixed-content-input {
+    flex: 1;
+    min-width: 0;
+}
+
+input[type="date"] {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.9rem;
+    padding: 0.75rem 0.5rem;
+    border: 1.5px solid var(--border-input);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+    flex-shrink: 0;
+}
+input[type="date"]:focus {
+    border-color: var(--text);
+}
+
+#fixed-add-form button {
+    width: auto;
+    padding: 0.75rem 1.25rem;
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+#fixed-task-list {
+    list-style: none;
+}
+
+#fixed-task-list li {
+    display: flex;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+    gap: 1rem;
+}
+
+#fixed-task-list li:last-child {
+    border-bottom: none;
+}
+
+#fixed-task-list li span:first-child {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    min-width: 2.5rem;
+}
+
+#fixed-task-list li span:nth-child(2) {
+    flex: 1;
+    font-size: 1rem;
+}
+
+#fixed-task-list li button {
+    width: auto;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.85rem;
+    background: var(--surface-alt);
+    color: var(--text-sub);
+    border-radius: 8px;
+}
+
+#fixed-completed-section {
+    margin-top: 2rem;
+}
+
+#fixed-completed-toggle {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: none;
+    padding: 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 0;
+    cursor: pointer;
+}
+#fixed-completed-toggle:hover {
+    opacity: 1;
+    color: var(--text-sub);
+}
+
+#fixed-completed-toggle[aria-expanded="true"] .chevron {
+    transform: rotate(0deg);
+}
+
+#fixed-completed-body {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-top: 0;
+    transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.3s ease;
+}
+
+#fixed-completed-body.expanded {
+    max-height: 2000px;
+    opacity: 1;
+    margin-top: 0.5rem;
+}
+
+#fixed-completed-empty {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    padding: 0.75rem 0;
+}
+
+#fixed-completed-list {
+    list-style: none;
+}
+
+#fixed-completed-list li {
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+#fixed-completed-list li:last-child {
+    border-bottom: none;
+}
+
+#fixed-completed-list li span {
     font-size: 1rem;
     color: var(--text-muted);
     text-decoration: line-through;
